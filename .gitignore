@@ -6,6 +6,7 @@ public/uploads/*
 !public/uploads/masmur.jpeg
 !public/uploads/dani.jpeg
 !public/uploads/default-avatar.png
+!public/uploads/main-photo.JPG
 
 PANDUAN_DEPLOY_AWS.txt
 PANDUAN_RUN_LOKAL.txt
