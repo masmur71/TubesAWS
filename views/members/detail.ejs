@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Goatstensi — Detail Anggota" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    /* Custom creative styles for detail page */
+    body {
+      background: var(--gray-950);
+      color: var(--white);
+    }
+    .detail-hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 100px 20px;
+    }
+    .detail-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      background-size: 128px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .back-btn {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 24px;
+      letter-spacing: 4px;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+    .detail-wrapper {
+      padding: 100px 20px 60px 20px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      text-align: left;
+    }
+    .profile-info-col {
+      animation: heroFadeIn 1s ease 0.3s both;
+    }
+    .header-section {
+      margin-bottom: 50px;
+      text-transform: uppercase;
+    }
+    .member-name-huge {
+      font-family: var(--font-display);
+      font-size: clamp(50px, 8vw, 90px);
+      line-height: 0.95;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+    .member-role-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      background: #111111;
+      border: 2px solid #333333;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 0;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: transparent;
+      padding: 10px 0;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #737373;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 800;
+    }
+    .info-value {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .info-value.email {
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .bio-section {
+      background: transparent;
+      padding: 10px 0;
+      margin-bottom: 60px;
+    }
+    .bio-label {
+      font-size: 14px;
+      color: #a3a3a3;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      font-weight: 900;
+      margin-bottom: 15px;
+    }
+    .bio-text {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #e5e5e5;
+      font-style: normal;
+      font-weight: 500;
+    }
+    .social-links-huge {
+      display: flex;
+      gap: 20px;
+    }
+    .social-huge {
+      width: 60px;
+      height: 60px;
+      background: #0a0a0a;
+      border: 2px solid #333333;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+    .social-huge:hover {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+      transform: translate(-4px, -4px);
+      box-shadow: 6px 6px 0px #333333;
+    }
+    @media (max-width: 768px) {
+      .detail-wrapper {
+        padding: 80px 20px 40px 20px;
+      }
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .back-btn { top: 20px; left: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Background Particles -->
+  <div class="bg-animation">
+    <div class="particle" style="--i:1"></div>
+    <div class="particle" style="--i:2"></div>
+    <div class="particle" style="--i:3"></div>
+    <div class="particle" style="--i:4"></div>
+    <div class="particle" style="--i:5"></div>
+    <div class="particle" style="--i:6"></div>
+    <div class="particle" style="--i:7"></div>
+    <div class="particle" style="--i:8"></div>
+  </div>
+
+  <section class="detail-hero">
+    <div class="detail-bg"></div>
+    
+    <a href="/dashboard" onclick="if(window.parent !== window && window.parent.closeDetailModal){ window.parent.closeDetailModal(); return false; }" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> KEMBALI
+    </a>
+
+    <div class="detail-wrapper">
+      <div class="profile-info-col">
+        
+        <div class="header-section">
+          <h1 class="member-name-huge"><%= member.nama %></h1>
+          <div class="member-role-tag">
+            <i class="fa-solid fa-user-tag"></i> <%= member.role_kelompok || 'Anggota' %>
+          </div>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label"><i class="fa-solid fa-id-card"></i> NIM</span>
+            <span class="info-value"><%= member.nim %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="fa-solid fa-graduation-cap"></i> Program Studi</span>
+            <span class="info-value"><%= member.prodi %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="fa-solid fa-chalkboard-user"></i> Kelas</span>
+            <span class="info-value"><%= member.kelas %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="fa-solid fa-envelope"></i> Email</span>
+            <span class="info-value email"><%= member.email %></span>
+          </div>
+        </div>
+
+        <% if (member.bio) { %>
+        <div class="bio-section">
+          <div class="bio-label">Tentang</div>
+          <div class="bio-text">
+            "<%= member.bio %>"
+          </div>
+        </div>
+        <% } %>
+
+        <div class="social-links-huge">
+          <% if (member.github_url) { %>
+          <a href="<%= member.github_url %>" target="_blank" class="social-huge" title="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+          <% } %>
+          <% if (member.linkedin_url) { %>
+          <a href="<%= member.linkedin_url %>" target="_blank" class="social-huge" title="LinkedIn">
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+          <% } %>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

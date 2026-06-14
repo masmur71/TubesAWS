@@ -1,0 +1,14 @@
+node_modules/
+.env
+public/uploads/*
+!public/uploads/ariq.jpg
+!public/uploads/nadhif.jpeg
+!public/uploads/masmur.jpeg
+!public/uploads/dani.jpeg
+!public/uploads/default-avatar.png
+
+PANDUAN_DEPLOY_AWS.txt
+PANDUAN_RUN_LOKAL.txt
+panduanTubes.md
+DEPLOY_AWS.md
+"TUGAS BESAR BBK3CAB3 - KOMPUTASI AWAN 2026 Kirim.md"
