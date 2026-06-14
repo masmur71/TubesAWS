@@ -1,12 +1,10 @@
-// controllers/authController.js
-// Handles login and logout logic (REST API)
+import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import pool from '../config/database';
 
-const bcrypt = require('bcryptjs');
-const pool = require('../config/database');
-
-const authController = {
+export const authController = {
   // POST /api/auth/login
-  processLogin: async (req, res) => {
+  processLogin: async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -17,7 +15,7 @@ const authController = {
     }
 
     try {
-      const [rows] = await pool.query(
+      const [rows]: any = await pool.query(
         'SELECT * FROM users WHERE username = ? LIMIT 1',
         [username.trim()]
       );
@@ -39,13 +37,13 @@ const authController = {
         });
       }
 
-      // Save user to session (exclude password)
+      // Save user to session
       const sessionUser = {
         id: user.id,
         username: user.username,
         role: user.role,
-        loginTime: new Date().toISOString(),
       };
+      
       req.session.user = sessionUser;
 
       return res.json({
@@ -63,7 +61,7 @@ const authController = {
   },
 
   // POST /api/auth/logout
-  processLogout: (req, res) => {
+  processLogout: (req: Request, res: Response) => {
     req.session.destroy((err) => {
       if (err) {
         console.error('Session destroy error:', err);
@@ -81,7 +79,7 @@ const authController = {
   },
 
   // GET /api/auth/me
-  getMe: (req, res) => {
+  getMe: (req: Request, res: Response) => {
     if (req.session && req.session.user) {
       return res.json({
         success: true,
@@ -95,4 +93,4 @@ const authController = {
   },
 };
 
-module.exports = authController;
+export default authController;

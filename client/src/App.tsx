@@ -3,7 +3,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-import MemberDetailPage from './pages/MemberDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -16,21 +15,15 @@ export default function App() {
 
           {/* Protected routes */}
           <Route
-            path="/dashboard"
             element={
               <ProtectedRoute>
                 <DashboardPage />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="/members/:id"
-            element={
-              <ProtectedRoute>
-                <MemberDetailPage />
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route path="/dashboard" element={null} />
+            <Route path="/members/:id" element={null} />
+          </Route>
 
           {/* Redirects */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

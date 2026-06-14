@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { api } from '../services/api';
-import type { Member } from '../types';
-import ParticleBackground from '../components/ui/ParticleBackground';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { api } from '../../services/api';
+import type { Member } from '../../types';
+import ParticleBackground from '../ui/ParticleBackground';
+import LoadingSpinner from '../common/LoadingSpinner';
 
-export default function MemberDetailPage() {
+export default function MemberDetailModal() {
   const { id } = useParams<{ id: string }>();
   const [member, setMember] = useState<Member | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,7 +93,7 @@ export default function MemberDetailPage() {
               { icon: 'fa-envelope', label: 'Email', value: member.email },
             ].map((item) => (
               <div key={item.label} className="space-y-2">
-                <span className="block text-[11px] text-surface-500 uppercase tracking-[0.2em] font-bold">
+                <span className="block text-[11px] text-surface-1000 uppercase tracking-[0.2em] font-bold">
                   <i className={`fa-solid ${item.icon} mr-1.5`} />
                   {item.label}
                 </span>

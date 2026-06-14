@@ -1,7 +1,7 @@
-// routes/auth.js
-const express = require('express');
+import express from 'express';
+import authController from '../controllers/authController';
+
 const router = express.Router();
-const authController = require('../controllers/authController');
 
 // POST /api/auth/login
 router.post('/login', authController.processLogin);
@@ -12,4 +12,4 @@ router.post('/logout', authController.processLogout);
 // GET /api/auth/me — check current session
 router.get('/me', authController.getMe);
 
-module.exports = router;
+export default router;

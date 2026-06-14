@@ -1,13 +1,11 @@
-// controllers/memberController.js
-// Handles member (anggota kelompok) operations (REST API)
+import { Request, Response } from 'express';
+import pool from '../config/database';
 
-const pool = require('../config/database');
-
-const memberController = {
+export const memberController = {
   // GET /api/members - List all members
-  index: async (req, res) => {
+  index: async (req: Request, res: Response) => {
     try {
-      const [members] = await pool.query('SELECT * FROM members ORDER BY id ASC');
+      const [members]: any = await pool.query('SELECT * FROM members ORDER BY id ASC');
       return res.json({
         success: true,
         members,
@@ -22,9 +20,9 @@ const memberController = {
   },
 
   // GET /api/members/:id - Show single member
-  show: async (req, res) => {
+  show: async (req: Request, res: Response) => {
     try {
-      const [rows] = await pool.query(
+      const [rows]: any = await pool.query(
         'SELECT * FROM members WHERE id = ? LIMIT 1',
         [req.params.id]
       );
@@ -48,4 +46,4 @@ const memberController = {
   },
 };
 
-module.exports = memberController;
+export default memberController;

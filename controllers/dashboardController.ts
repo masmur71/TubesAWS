@@ -1,16 +1,14 @@
-// controllers/dashboardController.js
-// Dashboard & Server Info Controller (REST API)
+import { Request, Response } from 'express';
+import pool from '../config/database';
+import os from 'os';
 
-const pool = require('../config/database');
-const os = require('os');
-
-const dashboardController = {
+export const dashboardController = {
   // GET /api/dashboard/stats
-  getStats: async (req, res) => {
+  getStats: async (req: Request, res: Response) => {
     try {
-      const [membersCount] = await pool.query('SELECT COUNT(*) as total FROM members');
-      const [usersCount] = await pool.query('SELECT COUNT(*) as total FROM users');
-      const [members] = await pool.query('SELECT * FROM members ORDER BY id ASC');
+      const [membersCount]: any = await pool.query('SELECT COUNT(*) as total FROM members');
+      const [usersCount]: any = await pool.query('SELECT COUNT(*) as total FROM users');
+      const [members]: any = await pool.query('SELECT * FROM members ORDER BY id ASC');
 
       // Log this request
       const startTime = Date.now();
@@ -20,7 +18,7 @@ const dashboardController = {
         [
           process.env.SERVER_ID || '1',
           process.env.SERVER_NAME || 'WebServer-Instance-1',
-          req.ip || req.connection.remoteAddress,
+          req.ip || req.socket.remoteAddress,
           req.get('User-Agent'),
           req.path,
           req.method,
@@ -55,7 +53,7 @@ const dashboardController = {
   },
 
   // GET /api/server-info
-  serverInfo: (req, res) => {
+  serverInfo: (req: Request, res: Response) => {
     res.json({
       success: true,
       serverId: process.env.SERVER_ID || '1',
@@ -68,16 +66,16 @@ const dashboardController = {
   },
 
   // GET /api/server-logs
-  serverLogs: async (req, res) => {
+  serverLogs: async (req: Request, res: Response) => {
     try {
-      const [logs] = await pool.query(
+      const [logs]: any = await pool.query(
         'SELECT * FROM server_logs ORDER BY created_at DESC LIMIT 50'
       );
       res.json({ success: true, logs });
-    } catch (err) {
+    } catch (err: any) {
       res.json({ success: false, message: err.message });
     }
   },
 };
 
-module.exports = dashboardController;
+export default dashboardController;

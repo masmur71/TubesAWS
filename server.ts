@@ -1,13 +1,18 @@
-// server.js
-// Entry Point - TUGAS BESAR BBK3CAB3 - KOMPUTASI AWAN 2026
-// Express.js REST API Server + React SPA
+import dotenv from 'dotenv';
+import express, { Request, Response, NextFunction } from 'express';
+import session from 'express-session';
+import cors from 'cors';
+import morgan from 'morgan';
+import path from 'path';
+import fs from 'fs';
 
-require('dotenv').config();
-const express = require('express');
-const session = require('express-session');
-const cors = require('cors');
-const morgan = require('morgan');
-const path = require('path');
+// Routes
+import authRoutes from './routes/auth';
+import dashboardRoutes from './routes/dashboard';
+import memberRoutes from './routes/members';
+import serverInfoRoutes from './routes/serverInfo';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,13 +51,13 @@ app.use(session({
 // ============================================================
 // API Routes
 // ============================================================
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/dashboard', require('./routes/dashboard'));
-app.use('/api/members', require('./routes/members'));
-app.use('/api/server-info', require('./routes/serverInfo'));
+app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/members', memberRoutes);
+app.use('/api/server-info', serverInfoRoutes);
 
 // Health check endpoint (for AWS Load Balancer health checks)
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'healthy',
     serverId: SERVER_ID,
@@ -69,9 +74,8 @@ const clientBuildPath = path.join(__dirname, 'client/dist');
 app.use(express.static(clientBuildPath));
 
 // SPA catch-all — serve index.html for all non-API routes
-app.get('*', (req, res) => {
+app.get('*', (req: Request, res: Response) => {
   const indexPath = path.join(clientBuildPath, 'index.html');
-  const fs = require('fs');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
@@ -85,7 +89,7 @@ app.get('*', (req, res) => {
 // ============================================================
 // Global Error Handler
 // ============================================================
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Unhandled error:', err.stack);
   res.status(500).json({
     success: false,
@@ -96,7 +100,7 @@ app.use((err, req, res, next) => {
 // ============================================================
 // Start Server
 // ============================================================
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT as number, '0.0.0.0', () => {
   console.log('');
   console.log(`Server running on    : http://0.0.0.0:${PORT}`);
   console.log(`Server ID            : ${SERVER_ID}`);
@@ -105,4 +109,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('');
 });
 
-module.exports = app;
+export default app;
