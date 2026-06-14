@@ -2,16 +2,14 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { isGuest } = require('../middleware/authMiddleware');
 
-// GET /auth/login
-router.get('/login', isGuest, authController.showLogin);
+// POST /api/auth/login
+router.post('/login', authController.processLogin);
 
-// POST /auth/login
-router.post('/login', isGuest, authController.processLogin);
-
-// POST /auth/logout (or GET for convenience)
-router.get('/logout', authController.processLogout);
+// POST /api/auth/logout
 router.post('/logout', authController.processLogout);
+
+// GET /api/auth/me — check current session
+router.get('/me', authController.getMe);
 
 module.exports = router;

@@ -1,4 +1,6 @@
 node_modules/
+client/node_modules/
+client/dist/
 .env
 public/uploads/*
 !public/uploads/ariq.jpg
@@ -8,8 +10,10 @@ public/uploads/*
 !public/uploads/default-avatar.png
 !public/uploads/main-photo.JPG
 
+"TUGAS BESAR BBK3CAB3 - KOMPUTASI AWAN 2026 Kirim.md"
 PANDUAN_DEPLOY_AWS.txt
 PANDUAN_RUN_LOKAL.txt
 panduanTubes.md
-DEPLOY_AWS.md
-"TUGAS BESAR BBK3CAB3 - KOMPUTASI AWAN 2026 Kirim.md"
+*.md
+*.txt
+!README.md

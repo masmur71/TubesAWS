@@ -1,12 +1,27 @@
 // controllers/memberController.js
-// Handles member (anggota kelompok) CRUD operations
+// Handles member (anggota kelompok) operations (REST API)
 
 const pool = require('../config/database');
-const path = require('path');
-const fs = require('fs');
 
 const memberController = {
-  // GET /members/:id - Show single member
+  // GET /api/members - List all members
+  index: async (req, res) => {
+    try {
+      const [members] = await pool.query('SELECT * FROM members ORDER BY id ASC');
+      return res.json({
+        success: true,
+        members,
+      });
+    } catch (err) {
+      console.error('Members list error:', err);
+      return res.status(500).json({
+        success: false,
+        message: 'Terjadi kesalahan server.',
+      });
+    }
+  },
+
+  // GET /api/members/:id - Show single member
   show: async (req, res) => {
     try {
       const [rows] = await pool.query(
@@ -14,22 +29,23 @@ const memberController = {
         [req.params.id]
       );
       if (rows.length === 0) {
-        req.flash('error', 'Anggota tidak ditemukan.');
-        return res.redirect('/members');
+        return res.status(404).json({
+          success: false,
+          message: 'Anggota tidak ditemukan.',
+        });
       }
-      res.render('members/detail', {
-        title: `Profil ${rows[0].nama} - TUBES Komputasi Awan 2026`,
+      return res.json({
+        success: true,
         member: rows[0],
-        activePage: 'members',
       });
     } catch (err) {
       console.error('Member show error:', err);
-      req.flash('error', 'Terjadi kesalahan server.');
-      res.redirect('/members');
+      return res.status(500).json({
+        success: false,
+        message: 'Terjadi kesalahan server.',
+      });
     }
   },
-
-
 };
 
 module.exports = memberController;

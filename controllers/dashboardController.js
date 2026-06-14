@@ -1,12 +1,12 @@
 // controllers/dashboardController.js
-// Dashboard & Server Info Controller
+// Dashboard & Server Info Controller (REST API)
 
 const pool = require('../config/database');
 const os = require('os');
 
 const dashboardController = {
-  // GET /dashboard
-  index: async (req, res) => {
+  // GET /api/dashboard/stats
+  getStats: async (req, res) => {
     try {
       const [membersCount] = await pool.query('SELECT COUNT(*) as total FROM members');
       const [usersCount] = await pool.query('SELECT COUNT(*) as total FROM users');
@@ -29,9 +29,7 @@ const dashboardController = {
         ]
       );
 
-      res.render('dashboard', {
-        title: 'Dashboard - TUBES Komputasi Awan 2026',
-        activePage: 'dashboard',
+      return res.json({
         stats: {
           totalMembers: membersCount[0].total,
           totalUsers: usersCount[0].total,
@@ -44,9 +42,7 @@ const dashboardController = {
       });
     } catch (err) {
       console.error('Dashboard error:', err);
-      res.render('dashboard', {
-        title: 'Dashboard - TUBES Komputasi Awan 2026',
-        activePage: 'dashboard',
+      return res.json({
         stats: { totalMembers: 0, totalUsers: 0 },
         members: [],
         serverId: process.env.SERVER_ID || '1',
@@ -58,7 +54,7 @@ const dashboardController = {
     }
   },
 
-  // GET /api/server-info - API endpoint untuk AJAX polling
+  // GET /api/server-info
   serverInfo: (req, res) => {
     res.json({
       success: true,
@@ -71,7 +67,7 @@ const dashboardController = {
     });
   },
 
-  // GET /api/server-logs - API untuk log history
+  // GET /api/server-logs
   serverLogs: async (req, res) => {
     try {
       const [logs] = await pool.query(

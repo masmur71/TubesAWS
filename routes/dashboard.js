@@ -4,11 +4,10 @@ const router = express.Router();
 const dashboardController = require('../controllers/dashboardController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
 
-// GET /dashboard
-router.get('/', isAuthenticated, dashboardController.index);
+// GET /api/dashboard/stats
+router.get('/stats', isAuthenticated, dashboardController.getStats);
 
-// API endpoints (no auth required for load balancer health check)
-router.get('/api/server-info', dashboardController.serverInfo);
-router.get('/api/server-logs', isAuthenticated, dashboardController.serverLogs);
+// GET /api/dashboard/server-logs
+router.get('/server-logs', isAuthenticated, dashboardController.serverLogs);
 
 module.exports = router;

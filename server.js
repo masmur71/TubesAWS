@@ -1,13 +1,12 @@
 // server.js
 // Entry Point - TUGAS BESAR BBK3CAB3 - KOMPUTASI AWAN 2026
-// Express.js Web Server with MySQL Database & Load Balancer Indicator
+// Express.js REST API Server + React SPA
 
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const flash = require('connect-flash');
+const cors = require('cors');
 const morgan = require('morgan');
-const methodOverride = require('method-override');
 const path = require('path');
 
 const app = express();
@@ -16,19 +15,20 @@ const SERVER_ID = process.env.SERVER_ID || '1';
 const SERVER_NAME = process.env.SERVER_NAME || 'WebServer-Instance-1';
 
 // ============================================================
-// View Engine Configuration
-// ============================================================
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// ============================================================
 // Middleware Stack
 // ============================================================
 app.use(morgan('combined'));                            // HTTP logging
 app.use(express.json());                               // Parse JSON bodies
 app.use(express.urlencoded({ extended: true }));       // Parse URL-encoded bodies
-app.use(methodOverride('_method'));                    // Support PUT/DELETE via query string
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+
+// CORS for development (Vite dev server on port 5173)
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' ? false : 'http://localhost:5173',
+  credentials: true,
+}));
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Session configuration
 app.use(session({
@@ -36,32 +36,20 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to true if behind HTTPS proxy
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax',
   },
 }));
 
-app.use(flash());
-
-// Attach global template variables (user, serverId, flash messages)
-const { attachUser } = require('./middleware/authMiddleware');
-app.use(attachUser);
-
 // ============================================================
-// Routes
+// API Routes
 // ============================================================
-app.use('/auth', require('./routes/auth'));
-app.use('/dashboard', require('./routes/dashboard'));
-app.use('/members', require('./routes/members'));
-
-// Root redirect
-app.get('/', (req, res) => {
-  if (req.session && req.session.user) {
-    return res.redirect('/dashboard');
-  }
-  res.redirect('/auth/login');
-});
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/members', require('./routes/members'));
+app.use('/api/server-info', require('./routes/serverInfo'));
 
 // Health check endpoint (for AWS Load Balancer health checks)
 app.get('/health', (req, res) => {
@@ -75,15 +63,23 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================================
-// 404 Error Handler
+// Serve React SPA (Production)
 // ============================================================
-app.use((req, res) => {
-  res.status(404).render('error', {
-    title: '404 - Halaman Tidak Ditemukan',
-    statusCode: 404,
-    message: 'Halaman yang Anda cari tidak ditemukan.',
-    activePage: '',
-  });
+const clientBuildPath = path.join(__dirname, 'client/dist');
+app.use(express.static(clientBuildPath));
+
+// SPA catch-all — serve index.html for all non-API routes
+app.get('*', (req, res) => {
+  const indexPath = path.join(clientBuildPath, 'index.html');
+  const fs = require('fs');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({
+      success: false,
+      message: 'Client build not found. Run: cd client && npm run build',
+    });
+  }
 });
 
 // ============================================================
@@ -91,11 +87,9 @@ app.use((req, res) => {
 // ============================================================
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err.stack);
-  res.status(500).render('error', {
-    title: '500 - Server Error',
-    statusCode: 500,
+  res.status(500).json({
+    success: false,
     message: 'Terjadi kesalahan pada server. Silakan coba lagi.',
-    activePage: '',
   });
 });
 
@@ -104,9 +98,11 @@ app.use((err, req, res, next) => {
 // ============================================================
 app.listen(PORT, '0.0.0.0', () => {
   console.log('');
-
   console.log(`Server running on    : http://0.0.0.0:${PORT}`);
-
+  console.log(`Server ID            : ${SERVER_ID}`);
+  console.log(`Server Name          : ${SERVER_NAME}`);
+  console.log(`Mode                 : ${process.env.NODE_ENV || 'development'}`);
+  console.log('');
 });
 
 module.exports = app;
