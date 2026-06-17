@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, Routes, Route } from 'react-router-dom';
 import { api } from '../services/api';
-import type { DashboardData, Member } from '../types';
+import type { DashboardData } from '../types';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import ParticleBackground from '../components/ui/ParticleBackground';
@@ -73,8 +73,6 @@ export default function DashboardPage() {
   };
 
   if (loading) return <LoadingSpinner text="Memuat Dashboard..." />;
-
-  const members: Member[] = data?.members || [];
 
   return (
     <>
