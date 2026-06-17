@@ -74,6 +74,21 @@ INSERT INTO members (nim, nama, email, prodi, kelas, foto, bio, role_kelompok) V
 ON DUPLICATE KEY UPDATE foto = VALUES(foto), updated_at = NOW();
 
 -- ============================================================
+-- Table: sessions (untuk shared session store di belakang Load Balancer)
+-- PENTING: Tabel ini dibuat otomatis oleh express-mysql-session,
+-- tapi didefinisikan di sini untuk dokumentasi dan jika perlu dibuat manual.
+-- Session disimpan di database agar KEDUA WebServer berbagi session
+-- yang sama, sehingga user tidak perlu login ulang saat ALB
+-- mengarahkan request ke server yang berbeda.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS sessions (
+    session_id VARCHAR(128) NOT NULL PRIMARY KEY,
+    expires INT(11) UNSIGNED NOT NULL,
+    data MEDIUMTEXT,
+    INDEX idx_expires (expires)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- Create Application User (gunakan untuk koneksi dari app)
 -- ============================================================
 CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'StrongPassword123!';
@@ -84,3 +99,4 @@ FLUSH PRIVILEGES;
 SELECT 'Database initialized successfully!' AS status;
 SELECT COUNT(*) AS total_users FROM users;
 SELECT COUNT(*) AS total_members FROM members;
+SELECT 'Sessions table ready for Load Balancer!' AS sessions_status;

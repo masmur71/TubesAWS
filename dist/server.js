@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
+const express_mysql_session_1 = __importDefault(require("express-mysql-session"));
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const path_1 = __importDefault(require("path"));
@@ -21,6 +22,11 @@ const PORT = process.env.PORT || 3000;
 const SERVER_ID = process.env.SERVER_ID || '1';
 const SERVER_NAME = process.env.SERVER_NAME || 'WebServer-Instance-1';
 // ============================================================
+// Trust Proxy (WAJIB jika di belakang AWS ALB / Reverse Proxy)
+// Memastikan req.ip, X-Forwarded-For, dan cookie secure bekerja benar
+// ============================================================
+app.set('trust proxy', 1);
+// ============================================================
 // Middleware Stack
 // ============================================================
 app.use((0, morgan_1.default)('combined')); // HTTP logging
@@ -33,15 +39,42 @@ app.use((0, cors_1.default)({
 }));
 // Serve uploaded files
 app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, 'public/uploads')));
+// ============================================================
+// MySQL Session Store (Shared Session untuk Load Balancer)
+// Session disimpan di database agar kedua WebServer berbagi
+// session yang sama — user tidak perlu login ulang saat ALB
+// mengarahkan request ke server lain.
+// ============================================================
+const MySQLStoreSession = (0, express_mysql_session_1.default)(express_session_1.default);
+const sessionStoreOptions = {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '3306', 10),
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'tubesaws_db',
+    // Auto-create tabel sessions jika belum ada
+    createDatabaseTable: true,
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data',
+        },
+    },
+};
+const sessionStore = new MySQLStoreSession(sessionStoreOptions);
 // Session configuration
 app.use((0, express_session_1.default)({
+    name: 'tubesaws.sid', // Nama cookie yang konsisten di semua server
     secret: process.env.SESSION_SECRET || 'tubesaws-secret-change-in-production',
     resave: false,
     saveUninitialized: false,
+    store: sessionStore, // Gunakan MySQL store, bukan in-memory
     cookie: {
-        secure: false, // Set to true if behind HTTPS proxy
+        secure: process.env.NODE_ENV === 'production', // true di production (HTTPS via ALB)
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: 24 * 60 * 60 * 1000, // 24 jam
         sameSite: 'lax',
     },
 }));
@@ -99,6 +132,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server ID            : ${SERVER_ID}`);
     console.log(`Server Name          : ${SERVER_NAME}`);
     console.log(`Mode                 : ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Session store        : MySQL (${process.env.DB_HOST}/${process.env.DB_NAME})`);
     console.log('');
 });
 exports.default = app;

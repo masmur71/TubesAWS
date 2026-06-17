@@ -10,13 +10,14 @@
     "dev:client": "cd client && npm run dev",
     "build:client": "cd client && npm run build",
     "install:client": "cd client && npm install",
-    "postinstall": "cd client && npm install && npm run build:server"
+    "deploy:build": "tsc && cd client && npm install && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-mysql-session": "^3.0.3",
     "express-session": "^1.18.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.7",
@@ -26,6 +27,7 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/express-mysql-session": "^3.0.8",
     "@types/express-session": "^1.19.0",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.9.3",
