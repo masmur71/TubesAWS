@@ -40,7 +40,7 @@ app.use(cors({
 }));
 
 // Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
 
 // ============================================================
 // MySQL Session Store (Shared Session untuk Load Balancer)
@@ -107,7 +107,7 @@ app.get('/health', (req: Request, res: Response) => {
 // ============================================================
 // Serve React SPA (Production)
 // ============================================================
-const clientBuildPath = path.join(__dirname, 'client/dist');
+const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
 app.use(express.static(clientBuildPath));
 
 // SPA catch-all — serve index.html for all non-API routes
