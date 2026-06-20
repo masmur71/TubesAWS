@@ -39,8 +39,10 @@ app.use(cors({
   credentials: true,
 }));
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
+// Serve uploaded files (foto member, hero image, dll.)
+// Menggunakan process.cwd() agar path benar di development (tsx watch)
+// maupun production (node dist/server.js) — keduanya dijalankan dari root project.
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // ============================================================
 // MySQL Session Store (Shared Session untuk Load Balancer)
